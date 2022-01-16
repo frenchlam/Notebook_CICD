@@ -30,6 +30,10 @@ if not os.path.exists(requirements_path):
 
 # COMMAND ----------
 
+model_name = "dais-2021-churn_MLA" #interpreter restarted due to requirements installation
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC Assert that the model accuracy was at least 80% at training time:
 
