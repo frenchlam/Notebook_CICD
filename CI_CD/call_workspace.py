@@ -1,6 +1,6 @@
 # Databricks notebook source
 workspace_url = 'https://adb-1951422908521494.14.azuredatabricks.net/'
-pat_token = 'dapic9085f70198dc643e770f4be573abad9-2'
+pat_token = dbutils.secrets.get(scope="prod_env", key="pat_token_pod")
 target_git = 'https://github.com/frenchlam/DAIWT2021.git'
 target_job_name = 'Prod_Modeling'
 
@@ -134,7 +134,7 @@ except requests.exceptions.RequestException as err:
 
 # COMMAND ----------
 
-
+dbutils.secrets.get(scope="prod_env", key="pat_token_pod")
 
 # COMMAND ----------
 
