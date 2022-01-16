@@ -38,7 +38,7 @@ if not os.path.exists(requirements_path):
 import mlflow.tracking
 
 client = mlflow.tracking.MlflowClient()
-latest_model_detail = client.get_latest_versions("dais-2021-churn", stages=['Staging'])[0]
+latest_model_detail = client.get_latest_versions(model_name, stages=['Staging'])[0]
 accuracy = mlflow.get_run(latest_model_detail.run_id).data.metrics['training_accuracy_score']
 print(f"Training accuracy: {accuracy}")
 assert(accuracy >= 0.8)
@@ -54,7 +54,7 @@ from databricks.feature_store import FeatureStoreClient
 
 fs = FeatureStoreClient()
 
-output_df = fs.score_batch("models:/dais-2021-churn/staging", spark.table("seanowen.demographic"))
+output_df = fs.score_batch(f"models:/{model_name}/staging", spark.table("matthieulamdaiwt.demographic"))
 
 accuracy = output_df.filter("Churn == prediction").count() / output_df.count()
 print(f"Accuracy on golden test set: {accuracy}")
@@ -67,4 +67,8 @@ assert(accuracy >= 0.8)
 
 # COMMAND ----------
 
-client.transition_model_version_stage("dais-2021-churn", latest_model_detail.version, stage="Production", archive_existing_versions=True)
+client.transition_model_version_stage(model_name, latest_model_detail.version, stage="Production", archive_existing_versions=True)
+
+# COMMAND ----------
+
+
