@@ -185,7 +185,7 @@ mlflow_call_endpoint("registry-webhooks/list", method="GET", body=json.dumps({"m
 
 # COMMAND ----------
 
-mlflow_call_endpoint("registry-webhooks/delete", method="DELETE", body=json.dumps({'id': '958806673f1649609bc8072bf79e6fa3'}))
+mlflow_call_endpoint("registry-webhooks/delete", method="DELETE", body=json.dumps({'id': '5ed4b604af584cf0bbc0b3b186491b4d'}))
 
 # COMMAND ----------
 
