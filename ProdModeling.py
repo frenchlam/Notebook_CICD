@@ -13,6 +13,17 @@
 # COMMAND ----------
 
 model_name = "dais-2021-churn_MLA"
+experiment_name = "/Repos/matthieu.lamairesse@databricks.com/DAIWT2021/ProdModeling"
+
+# COMMAND ----------
+
+# from mlflow.tracking.client import MlflowClient
+
+# all_experiments = [exp.experiment_id for exp in MlflowClient().list_experiments()]
+
+# for experiment in all_experiments : 
+#   experiment = MlflowClient().get_experiment(experiment)
+#   if experiment.name == experiment_name : experiment_id = experiment.experiment_id
 
 # COMMAND ----------
 
@@ -101,6 +112,9 @@ import numpy as np
 from sklearn.metrics import log_loss, accuracy_score
 import mlflow
 
+mlflow.autolog(log_input_examples=False)
+mlflow.set_experiment(experiment_name)
+
 def train_model(params):
   model = build_model(params)
   model.fit(X_train, y_train)
@@ -130,6 +144,7 @@ import mlflow
 from mlflow.models.signature import infer_signature
 
 mlflow.autolog(log_input_examples=True)
+mlflow.set_experiment(experiment_name)
 
 with mlflow.start_run() as run:
   training_set = fs.create_training_set(spark.read.table("matthieulamDAIWT.demographic"), 
@@ -166,8 +181,3 @@ client = mlflow.tracking.MlflowClient()
 
 model_version = client.get_latest_versions(model_name, stages=["None"])[0]
 client.transition_model_version_stage(model_name, model_version.version, stage="Staging")
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC A webhook was previously set up to trigger an automated testing notebook whenever a new Staging candidate is registered. If successful, the model is promoted to Production.
