@@ -14,18 +14,48 @@
 # COMMAND ----------
 
 model_name = "dais-2021-churn_MLA"
+current_user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().apply('user')
+print(current_user)
+
+# COMMAND ----------
+
+#download data
+url = "https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv"
+path = "/tmp/telco-churn/"
+file = "Telco-Customer-Churn.csv"
+
+from pathlib import Path
+Path(path).mkdir(parents=True, exist_ok=True)
+
+import urllib 
+urllib.request.urlretrieve(url, path+file)
+  
+#dbutils.fs.mv( "file:"+path, "dbfs:/Users/"+current_user+"/telco-churn/" , recurse = True)
+dbutils.fs.mv( "file:"+path, "dbfs:/dataset/telco-churn/" , recurse = True)
+
+# COMMAND ----------
+
+# MAGIC %fs 
+# MAGIC ls /dataset/telco-churn/
+
+# COMMAND ----------
+
+# MAGIC %sql 
+# MAGIC DROP DATABASE matthieulamDAIWT CASCADE ; 
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC CREATE DATABASE IF NOT EXISTS matthieulamDAIWT;
-# MAGIC DROP TABLE IF EXISTS matthieulamDAIWT.demographic;
+# MAGIC CREATE DATABASE IF NOT EXISTS matthieulamDAIWT
+# MAGIC LOCATION 'dbfs:/databases/matthieulamDAIWT/' ;
+# MAGIC 
+# MAGIC --DROP TABLE IF EXISTS matthieulamDAIWT.demographic;
 
 # COMMAND ----------
 
 import pyspark.sql.functions as F
 
-telco_df = spark.read.option("header", True).option("inferSchema", True).csv("/mnt/databricks-datasets-private/ML/telco_churn/Telco-Customer-Churn.csv")
+telco_df = spark.read.option("header", True).option("inferSchema", True).csv("dbfs:/dataset/telco-churn/"+file)
 
 # 0/1 -> boolean
 telco_df = telco_df.withColumn("SeniorCitizen", F.col("SeniorCitizen") == 1)
@@ -45,10 +75,6 @@ telco_df = telco_df.withColumn("TotalCharges",\
     otherwise(F.col("TotalCharges").cast('double')))
 
 telco_df.select("customerID", "gender", "SeniorCitizen", "Partner", "Dependents", "Churn").write.format("delta").saveAsTable("matthieulamDAIWT.demographic")
-
-# COMMAND ----------
-
-
 
 # COMMAND ----------
 
@@ -128,13 +154,14 @@ def mlflow_call_endpoint(endpoint, method, body):
 
 # COMMAND ----------
 
+# DBTITLE 1,Create webhook
 trigger_job = json.dumps({
   "model_name": model_name,
   "events": ["MODEL_VERSION_TRANSITIONED_STAGE"],
   "description": "Trigger the CI/CD job when a model is moved to Staging",
   "status": "ACTIVE",
   "job_spec": {
-    "job_id": "1415341",
+    "job_id": "20",
     "workspace_url": host_creds.host,
     "access_token": host_creds.token
   }
