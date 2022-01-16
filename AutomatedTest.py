@@ -8,11 +8,15 @@
 
 # COMMAND ----------
 
+model_name = "dais-2021-churn_MLA"
+
+# COMMAND ----------
+
 from mlflow.store.artifact.models_artifact_repo import ModelsArtifactRepository
 import os
 
 try:
-  local_path = ModelsArtifactRepository(f"models:/dais-2021-churn/staging").download_artifacts("")
+  local_path = ModelsArtifactRepository(f"models:/{model_name}/staging").download_artifacts("")
 except Exception:
   dbutils.notebook.exit("No staging model")
 
