@@ -12,6 +12,11 @@
 
 # COMMAND ----------
 
+# MAGIC %fs 
+# MAGIC ls / 
+
+# COMMAND ----------
+
 model_name = "dais-2021-churn_MLA"
 experiment_name = "/Repos/matthieu.lamairesse@databricks.com/DAIWT2021/ProdModeling"
 
