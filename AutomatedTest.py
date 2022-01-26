@@ -12,6 +12,10 @@ model_name = "dais-2021-churn_MLA"
 
 # COMMAND ----------
 
+# MAGIC %md new comment
+
+# COMMAND ----------
+
 from mlflow.store.artifact.models_artifact_repo import ModelsArtifactRepository
 import os
 
