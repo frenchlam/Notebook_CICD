@@ -74,8 +74,14 @@ telco_df = telco_df.withColumn("TotalCharges",\
     F.when(F.length(F.trim(F.col("TotalCharges"))) == 0, None).\
     otherwise(F.col("TotalCharges").cast('double')))
 
-#telco_df.select("customerID", "gender", "SeniorCitizen", "Partner", "Dependents", "Churn").write.mode('overwrite').format("delta").saveAsTable("matthieulamDAIWT.demographic2")
-telco_df.write.mode('overwrite').format("delta").saveAsTable("matthieulamDAIWT.demographic2")
+telco_df.select("customerID", "gender", "SeniorCitizen", "Partner", "Dependents", "Churn").\
+                write.mode('overwrite').format("delta").\
+                saveAsTable("matthieulamDAIWT.demographic")
+telco_df.select( "customerID", "tenure", "PhoneService", "MultipleLines", "InternetService", "OnlineSecurity", "OnlineBackup", 
+                 "DeviceProtection", "TechSupport", "StreamingTV", "StreamingMovies", "Contract", "PaperlessBilling", "PaymentMethod",
+                 "MonthlyCharges", "TotalCharges").\
+                 write.mode('overwrite').format("delta").\
+                 saveAsTable("matthieulamDAIWT.other_features")
 
 # COMMAND ----------
 
@@ -116,11 +122,18 @@ from databricks.feature_store import FeatureStoreClient
 
 fs = FeatureStoreClient()
 
-service_features_table = fs.create_feature_table(
+# service_features_table = fs.create_feature_table(
+#   name='matthieulamDAIWT.service_features',
+#   primarykeys='customerID',
+#   schema=service_df.schema,
+#   description='Telco customer services')
+
+service_features_table = fs.create_table(
   name='matthieulamDAIWT.service_features',
-  keys='customerID',
+  primary_keys='customerID',
   schema=service_df.schema,
-  description='Telco customer services')
+  description='Telco customer services',
+)
 
 # COMMAND ----------
 

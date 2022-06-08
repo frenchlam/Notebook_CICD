@@ -32,6 +32,14 @@ experiment_name = "/Repos/matthieu.lamairesse@databricks.com/DAIWT2021/ProdModel
 
 # COMMAND ----------
 
+from functions import compute_service_features
+
+training_set = compute_service_features(spark.read.table("matthieulamDAIWT.demographic2"))
+df_loaded = training_set.toPandas()
+display(training_set)
+
+# COMMAND ----------
+
 from databricks.feature_store import FeatureStoreClient, FeatureLookup
 
 fs = FeatureStoreClient()

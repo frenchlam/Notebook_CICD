@@ -14,10 +14,6 @@
 
 # COMMAND ----------
 
-display(spark.read.table("matthieulamDAIWT.demographic2"))
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC Do the normal, predictable things. Compute summary stats. Plot some values. See what's what.
 
@@ -27,10 +23,22 @@ display(spark.read.table("matthieulamDAIWT.demographic").summary())
 
 # COMMAND ----------
 
+display(spark.read.table("matthieulamDAIWT.other_features").summary())
+
+# COMMAND ----------
+
+# MAGIC %load_ext autoreload
+# MAGIC %autoreload 2
+
+# COMMAND ----------
+
 from functions import compute_service_features
 
-test_def = compute_service_features(spark.read.table("matthieulamDAIWT.demographic2"))
-display(test_def)
+demographics_df = spark.read.table("matthieulamDAIWT.demographic")
+enriched_df = compute_service_features(spark.read.table("matthieulamDAIWT.other_features"))
+demographic_service_df = demographics_df.join(enriched_df, demographics_df.customerID == enriched_df.customerID, "inner").drop(enriched_df.customerID)
+
+display(demographic_service_df)
 
 
 # COMMAND ----------
