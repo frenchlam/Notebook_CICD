@@ -14,7 +14,7 @@
 
 # COMMAND ----------
 
-display(spark.read.table("matthieulamDAIWT.demographic"))
+display(spark.read.table("matthieulamDAIWT.demographic2"))
 
 # COMMAND ----------
 
@@ -27,17 +27,10 @@ display(spark.read.table("matthieulamDAIWT.demographic").summary())
 
 # COMMAND ----------
 
-display(spark.read.table("matthieulamDAIWT.demographic"))
+from functions import compute_service_features
 
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC This is easy, but frankly not that informative. Looking deeper would require writing some more code to explore, and, after all we do want to get on to trying out modeling too. Rather than continue, how about a coffee break while the machines do some work?
-# MAGIC 
-# MAGIC Use Auto ML to explore this data set and build a baseline model before continuing.
-
-# COMMAND ----------
-
+test_def = compute_service_features(spark.read.table("matthieulamDAIWT.demographic2"))
+display(test_def)
 
 
 # COMMAND ----------
@@ -49,18 +42,6 @@ display(spark.read.table("matthieulamDAIWT.demographic"))
 # MAGIC The model was OK, but, could probably be better with more data. There is, fortunately, more data about customers available -- additional information about the services they use, as well as some other derived, aggregated data. This was (let us say) previously used for another customer-related modeling task. This data is therefore available in the Feature Store. Why not reuse these features and see what happens, before going further?
 # MAGIC 
 # MAGIC Use the Feature Store to read and join everything in the `service_features` feature table.
-
-# COMMAND ----------
-
-from databricks.feature_store import FeatureStoreClient, FeatureLookup
-
-fs = FeatureStoreClient()
-
-training_set = fs.create_training_set(spark.read.table("matthieulamDAIWT.demographic"), 
-                                      [FeatureLookup(table_name = "matthieulamDAIWT.service_features", lookup_key="customerID")], 
-                                      label=None, exclude_columns="customerID")
-
-display(training_set.load_df())
 
 # COMMAND ----------
 

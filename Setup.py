@@ -74,7 +74,8 @@ telco_df = telco_df.withColumn("TotalCharges",\
     F.when(F.length(F.trim(F.col("TotalCharges"))) == 0, None).\
     otherwise(F.col("TotalCharges").cast('double')))
 
-telco_df.select("customerID", "gender", "SeniorCitizen", "Partner", "Dependents", "Churn").write.format("delta").saveAsTable("matthieulamDAIWT.demographic")
+#telco_df.select("customerID", "gender", "SeniorCitizen", "Partner", "Dependents", "Churn").write.mode('overwrite').format("delta").saveAsTable("matthieulamDAIWT.demographic2")
+telco_df.write.mode('overwrite').format("delta").saveAsTable("matthieulamDAIWT.demographic2")
 
 # COMMAND ----------
 
